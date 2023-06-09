@@ -184,7 +184,7 @@ void usbJoystickUpdate()
       HID_Buffer[i*2 +3] = static_cast<uint8_t>(value & 0xFF);
       HID_Buffer[i*2 +4] = static_cast<uint8_t>((value >> 8) & 0x07);
     }
-    if(++time == 1000)
+    if(++time == 10)
     {
       time=0;
       USBD_HID_SendReport(&USB_OTG_dev, HID_Buffer, 19);
