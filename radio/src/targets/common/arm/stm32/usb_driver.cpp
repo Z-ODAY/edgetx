@@ -20,8 +20,7 @@
  */
 
 #include "usb_driver.h"
-#include "FreeRTOS.h"
-#include "task.h"
+
 
 #if defined(USBJ_EX)
 #include "usb_joystick.h"
@@ -148,6 +147,7 @@ void usbJoystickUpdate()
 {
 //#if !defined(USBJ_EX)
   static uint8_t HID_Buffer[19];
+  static uint16_t time=0;
 
   // test to se if TX buffer is free
   if (USBD_HID_SendReport(&USB_OTG_dev, 0, 0) == USBD_OK) 
@@ -179,8 +179,12 @@ void usbJoystickUpdate()
       HID_Buffer[i*2 +4] = static_cast<uint8_t>((value >> 8) & 0x07);
 
     }
-    USBD_HID_SendReport(&USB_OTG_dev, HID_Buffer, 19);
-    vTaskDelay(500);
+    if(++time == 65534)
+    {
+      time=0;
+      USBD_HID_SendReport(&USB_OTG_dev, HID_Buffer, 19);
+    }
+    
   }
 //#else
   // test to se if TX buffer is free
