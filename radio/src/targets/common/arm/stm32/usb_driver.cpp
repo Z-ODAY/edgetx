@@ -20,6 +20,8 @@
  */
 
 #include "usb_driver.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 #if defined(USBJ_EX)
 #include "usb_joystick.h"
