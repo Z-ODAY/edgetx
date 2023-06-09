@@ -203,7 +203,7 @@ TASK_FUNCTION(mixerTask)
 
 #if defined(STM32) && !defined(SIMU)
       if (getSelectedUsbMode() == USB_JOYSTICK_MODE) {
-        usbJoystickUpdate();
+       // usbJoystickUpdate();
       }
 #endif
 
