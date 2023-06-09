@@ -176,7 +176,7 @@ void usbJoystickUpdate()
       HID_Buffer[i*2 +4] = static_cast<uint8_t>((value >> 8) & 0x07);
 
     }
-    USBD_HID_SendReport(&USB_OTG_dev, HID_Buffer, HID_IN_PACKET);
+   // USBD_HID_SendReport(&USB_OTG_dev, HID_Buffer, HID_IN_PACKET);
   }
 #else
   // test to se if TX buffer is free
