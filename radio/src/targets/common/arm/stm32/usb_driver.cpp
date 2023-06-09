@@ -176,16 +176,15 @@ void usbJoystickUpdate()
     
     //analog values
     //uint8_t * p = HID_Buffer + 1;
-    for (int i = 0; i < 4; ++i) {
-
+    for (int i = 0; i < 4; ++i) 
+    {
       int16_t value = channelOutputs[i] + 1024;
       if ( value > 2047 ) value = 2047;
       else if ( value < 0 ) value = 0;
       HID_Buffer[i*2 +3] = static_cast<uint8_t>(value & 0xFF);
       HID_Buffer[i*2 +4] = static_cast<uint8_t>((value >> 8) & 0x07);
-
     }
-    if(++time == 10000)
+    if(++time == 1000)
     {
       time=0;
       USBD_HID_SendReport(&USB_OTG_dev, HID_Buffer, 19);
