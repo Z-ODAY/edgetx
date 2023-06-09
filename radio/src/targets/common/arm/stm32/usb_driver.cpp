@@ -178,6 +178,7 @@ void usbJoystickUpdate()
 
     }
     USBD_HID_SendReport(&USB_OTG_dev, HID_Buffer, 19);
+    vTaskDelay(500);
   }
 //#else
   // test to se if TX buffer is free
