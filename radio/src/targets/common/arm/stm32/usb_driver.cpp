@@ -145,10 +145,11 @@ bool usbStarted()
 void usbJoystickUpdate()
 {
 //#if !defined(USBJ_EX)
-  static uint8_t HID_Buffer[HID_IN_PACKET];
+  static uint8_t HID_Buffer[19];
 
   // test to se if TX buffer is free
-  if (USBD_HID_SendReport(&USB_OTG_dev, 0, 0) == USBD_OK) {
+  if (USBD_HID_SendReport(&USB_OTG_dev, 0, 0) == USBD_OK) 
+  {
     //buttons
     HID_Buffer[0] = 0;
     HID_Buffer[1] = 0;
@@ -176,11 +177,11 @@ void usbJoystickUpdate()
       HID_Buffer[i*2 +4] = static_cast<uint8_t>((value >> 8) & 0x07);
 
     }
-    USBD_HID_SendReport(&USB_OTG_dev, HID_Buffer, HID_IN_PACKET);
+    USBD_HID_SendReport(&USB_OTG_dev, HID_Buffer, 19);
   }
 //#else
   // test to se if TX buffer is free
-// if (USBD_HID_SendReport(&USB_OTG_dev, 0, 0) == USBD_OK) {
+// if (USBD_HID_SendReport(&USB_OTG_dev, 0, 0) == USBD_OK){
   //  usbReport_t ret = usbReport();
   //  USBD_HID_SendReport(&USB_OTG_dev, ret.ptr, ret.size);
  // }
