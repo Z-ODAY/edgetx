@@ -146,7 +146,7 @@ bool usbStarted()
 void usbJoystickUpdate()
 {
 //#if !defined(USBJ_EX)
-  static uint8_t HID_Buffer[19];
+  static uint8_t HID_Buffer[19] = {0};
   static uint16_t time=0;
 
   // test to se if TX buffer is free
@@ -156,21 +156,27 @@ void usbJoystickUpdate()
     HID_Buffer[0] = 0;
     HID_Buffer[1] = 0;
     HID_Buffer[2] = 0;
-    for (int i = 0; i < 8; ++i) {
-      if ( channelOutputs[i+8] > 0 ) {
+/*    
+    for (int i = 0; i < 8; ++i) 
+    {
+      if ( channelOutputs[i+8] > 0 ) 
+      {
         HID_Buffer[0] |= (1 << i);
       }
-      if ( channelOutputs[i+16] > 0 ) {
+      if ( channelOutputs[i+16] > 0 ) 
+      {
         HID_Buffer[1] |= (1 << i);
       }
-      if ( channelOutputs[i+24] > 0 ) {
+      if ( channelOutputs[i+24] > 0 ) 
+      {
         HID_Buffer[2] |= (1 << i);
       }
     }
-
+*/
+    
     //analog values
     //uint8_t * p = HID_Buffer + 1;
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 0; i < 4; ++i) {
 
       int16_t value = channelOutputs[i] + 1024;
       if ( value > 2047 ) value = 2047;
@@ -179,7 +185,7 @@ void usbJoystickUpdate()
       HID_Buffer[i*2 +4] = static_cast<uint8_t>((value >> 8) & 0x07);
 
     }
-    if(++time == 65534)
+    if(++time == 10000)
     {
       time=0;
       USBD_HID_SendReport(&USB_OTG_dev, HID_Buffer, 19);
