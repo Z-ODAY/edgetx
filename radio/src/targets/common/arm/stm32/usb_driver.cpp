@@ -156,7 +156,7 @@ void usbJoystickUpdate()
     HID_Buffer[0] = 0;
     HID_Buffer[1] = 0;
     HID_Buffer[2] = 0;
-/*    
+    
     for (int i = 0; i < 8; ++i) 
     {
       if ( channelOutputs[i+8] > 0 ) 
@@ -172,7 +172,7 @@ void usbJoystickUpdate()
         HID_Buffer[2] |= (1 << i);
       }
     }
-*/
+
     
     //analog values
     //uint8_t * p = HID_Buffer + 1;
