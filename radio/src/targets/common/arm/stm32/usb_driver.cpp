@@ -176,7 +176,7 @@ void usbJoystickUpdate()
     
     //analog values
     //uint8_t * p = HID_Buffer + 1;
-    for (int i = 0; i < 4; ++i) 
+    for (int i = 0; i < 8; ++i) 
     {
       int16_t value = channelOutputs[i] + 1024;
       if ( value > 2047 ) value = 2047;
