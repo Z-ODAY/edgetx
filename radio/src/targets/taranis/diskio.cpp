@@ -419,25 +419,25 @@ BOOL rcvr_datablock (
     return FALSE; /* If not valid data token, return with error */
   }
 
-#if defined(SD_USE_DMA)
-  #if defined(STM32F4) && !defined(BOOT)
-  if ((DWORD)buff < RAM_START || ((DWORD)buff & 3)) {
-    stm32_dma_transfer(TRUE, sd_buff, btr);
-    memcpy(buff, sd_buff, btr);
-  } else {
-    stm32_dma_transfer(TRUE, buff, btr);
-  }
-  #else
-  stm32_dma_transfer(TRUE, buff, btr);
-  #endif
-#else
+// #if defined(SD_USE_DMA)
+//   #if defined(STM32F4) && !defined(BOOT)
+//   if ((DWORD)buff < RAM_START || ((DWORD)buff & 3)) {
+//     stm32_dma_transfer(TRUE, sd_buff, btr);
+//     memcpy(buff, sd_buff, btr);
+//   } else {
+//     stm32_dma_transfer(TRUE, buff, btr);
+//   }
+//   #else
+//   stm32_dma_transfer(TRUE, buff, btr);
+//   #endif
+// #else
   do {                                                    /* Receive the data block into buffer */
     rcvr_spi_m(buff++);
     rcvr_spi_m(buff++);
     rcvr_spi_m(buff++);
     rcvr_spi_m(buff++);
   } while (btr -= 4);
-#endif /* SD_USE_DMA */
+// #endif /* SD_USE_DMA */
 
   rcvr_spi();                                             /* Discard CRC */
   rcvr_spi();
@@ -473,24 +473,24 @@ BOOL xmit_datablock (
   xmit_spi(token);                                        /* transmit data token */
   if (token != 0xFD) {    /* Is data token */
 
-#if defined(SD_USE_DMA)
-  #if defined(STM32F4) && !defined(BOOT)
-  if ((DWORD)buff < RAM_START || ((DWORD)buff & 3)) {
-    memcpy(sd_buff, buff, 512);
-    stm32_dma_transfer(FALSE, sd_buff, 512);
-  } else {
-    stm32_dma_transfer(FALSE, buff, 512)
-  }
-  #else
-  stm32_dma_transfer(FALSE, buff, 512)
-  #endif
-#else
+// #if defined(SD_USE_DMA)
+//   #if defined(STM32F4) && !defined(BOOT)
+//   if ((DWORD)buff < RAM_START || ((DWORD)buff & 3)) {
+//     memcpy(sd_buff, buff, 512);
+//     stm32_dma_transfer(FALSE, sd_buff, 512);
+//   } else {
+//     stm32_dma_transfer(FALSE, buff, 512)
+//   }
+//   #else
+//   stm32_dma_transfer(FALSE, buff, 512)
+//   #endif
+// #else
     wc = 0;
     do {                                                    /* transmit the 512 byte data block to MMC */
       xmit_spi(*buff++);
       xmit_spi(*buff++);
     } while (--wc);
-#endif /* SD_USE_DMA */
+// #endif /* SD_USE_DMA */
 
     xmit_spi(0xFF);                                 /* CRC (Dummy) */
     xmit_spi(0xFF);
