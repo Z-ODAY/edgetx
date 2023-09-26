@@ -398,7 +398,6 @@ void power_off (void)
 
 #if defined(SD_USE_DMA) && defined(STM32F4) && !defined(BOOT)
   uint8_t sd_buff[512] __DMA;
-  #error
 #endif
 
 static
@@ -480,10 +479,10 @@ BOOL xmit_datablock (
     memcpy(sd_buff, buff, 512);
     stm32_dma_transfer(FALSE, sd_buff, 512);
   } else {
-    stm32_dma_transfer(FALSE, buff, 512);
+    stm32_dma_transfer(FALSE, buff, 512)
   }
   #else
-  stm32_dma_transfer(FALSE, buff, 512);
+  stm32_dma_transfer(FALSE, buff, 512)
   #endif
 #else
     wc = 0;
