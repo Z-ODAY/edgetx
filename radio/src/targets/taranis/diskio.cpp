@@ -398,6 +398,7 @@ void power_off (void)
 
 #if defined(SD_USE_DMA) && defined(STM32F4) && !defined(BOOT)
   uint8_t sd_buff[512] __DMA;
+  #error
 #endif
 
 static
@@ -485,7 +486,6 @@ BOOL xmit_datablock (
   stm32_dma_transfer(FALSE, buff, 512);
   #endif
 #else
-   #error
     wc = 0;
     do {                                                    /* transmit the 512 byte data block to MMC */
       xmit_spi(*buff++);
