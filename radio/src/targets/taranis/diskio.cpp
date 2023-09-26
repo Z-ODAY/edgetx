@@ -216,92 +216,92 @@ void release_spi (void)
   rcvr_spi();
 }
 
-#ifdef SD_USE_DMA
+// #ifdef SD_USE_DMA
 
-#if defined(STM32F4) && !defined(BOOT)
-WORD rw_workbyte[1] __DMA;
-#endif
+// #if defined(STM32F4) && !defined(BOOT)
+// WORD rw_workbyte[1] __DMA;
+// #endif
 
-/*-----------------------------------------------------------------------*/
-/* Transmit/Receive Block using DMA (Platform dependent. STM32 here)     */
-/*-----------------------------------------------------------------------*/
-static
-void stm32_dma_transfer(
-  BOOL receive,   /* FALSE for buff->SPI, TRUE for SPI->buff               */
-  const BYTE *buff, /* receive TRUE  : 512 byte data block to be transmitted
-               receive FALSE : Data buffer to store received data    */
-  UINT btr      /* receive TRUE  : Byte count (must be multiple of 2)
-               receive FALSE : Byte count (must be 512)              */
-)
-{
-  DMA_InitTypeDef DMA_InitStructure;
-#if defined(STM32F4) && !defined(BOOT)
-  rw_workbyte[0] = 0xffff;
-#else
-  WORD rw_workbyte[] = { 0xffff };
-#endif
+// /*-----------------------------------------------------------------------*/
+// /* Transmit/Receive Block using DMA (Platform dependent. STM32 here)     */
+// /*-----------------------------------------------------------------------*/
+// static
+// void stm32_dma_transfer(
+//   BOOL receive,   /* FALSE for buff->SPI, TRUE for SPI->buff               */
+//   const BYTE *buff, /* receive TRUE  : 512 byte data block to be transmitted
+//                receive FALSE : Data buffer to store received data    */
+//   UINT btr      /* receive TRUE  : Byte count (must be multiple of 2)
+//                receive FALSE : Byte count (must be 512)              */
+// )
+// {
+//   DMA_InitTypeDef DMA_InitStructure;
+// #if defined(STM32F4) && !defined(BOOT)
+//   rw_workbyte[0] = 0xffff;
+// #else
+//   WORD rw_workbyte[] = { 0xffff };
+// #endif
 
-  DMA_DeInit(SD_DMA_Stream_SPI_RX);
-  DMA_DeInit(SD_DMA_Stream_SPI_TX);
+//   DMA_DeInit(SD_DMA_Stream_SPI_RX);
+//   DMA_DeInit(SD_DMA_Stream_SPI_TX);
 
   
-  /* shared DMA configuration values between SPI2 RX & TX*/
-  DMA_InitStructure.DMA_Channel = SD_DMA_Channel_SPI;//the same channel
-  DMA_InitStructure.DMA_PeripheralBaseAddr = (DWORD)(&(SD_SPI->DR));
-  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
-  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-  DMA_InitStructure.DMA_BufferSize = btr;
-  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-  DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
+//   /* shared DMA configuration values between SPI2 RX & TX*/
+//   DMA_InitStructure.DMA_Channel = SD_DMA_Channel_SPI;//the same channel
+//   DMA_InitStructure.DMA_PeripheralBaseAddr = (DWORD)(&(SD_SPI->DR));
+//   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+//   DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+//   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+//   DMA_InitStructure.DMA_BufferSize = btr;
+//   DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+//   DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
   
-  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Enable;
-  DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;
-  DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
-  DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+//   DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Enable;
+//   DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;
+//   DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+//   DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
 
-  // separate RX & TX
-  if (receive) {
-    DMA_InitStructure.DMA_Memory0BaseAddr = (DWORD)buff;
-    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
-    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-    DMA_Init(SD_DMA_Stream_SPI_RX, &DMA_InitStructure);
-    DMA_InitStructure.DMA_Memory0BaseAddr = (DWORD)rw_workbyte;
-    DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
-    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Disable;
-    DMA_Init(SD_DMA_Stream_SPI_TX, &DMA_InitStructure);
-  }
-  else {
-#if _FS_READONLY == 0
-    DMA_InitStructure.DMA_Memory0BaseAddr = (DWORD)rw_workbyte;
-    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
-    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Disable;
-    DMA_Init(SD_DMA_Stream_SPI_RX, &DMA_InitStructure);
-    DMA_InitStructure.DMA_Memory0BaseAddr = (DWORD)buff;
-    DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
-    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-    DMA_Init(SD_DMA_Stream_SPI_TX, &DMA_InitStructure);
-#endif
-  }
+//   // separate RX & TX
+//   if (receive) {
+//     DMA_InitStructure.DMA_Memory0BaseAddr = (DWORD)buff;
+//     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
+//     DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+//     DMA_Init(SD_DMA_Stream_SPI_RX, &DMA_InitStructure);
+//     DMA_InitStructure.DMA_Memory0BaseAddr = (DWORD)rw_workbyte;
+//     DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
+//     DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Disable;
+//     DMA_Init(SD_DMA_Stream_SPI_TX, &DMA_InitStructure);
+//   }
+//   else {
+// #if _FS_READONLY == 0
+//     DMA_InitStructure.DMA_Memory0BaseAddr = (DWORD)rw_workbyte;
+//     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
+//     DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Disable;
+//     DMA_Init(SD_DMA_Stream_SPI_RX, &DMA_InitStructure);
+//     DMA_InitStructure.DMA_Memory0BaseAddr = (DWORD)buff;
+//     DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
+//     DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+//     DMA_Init(SD_DMA_Stream_SPI_TX, &DMA_InitStructure);
+// #endif
+//   }
 
-  /* Enable DMA Channels */
-  DMA_Cmd(SD_DMA_Stream_SPI_RX, ENABLE);
-  DMA_Cmd(SD_DMA_Stream_SPI_TX, ENABLE);
+//   /* Enable DMA Channels */
+//   DMA_Cmd(SD_DMA_Stream_SPI_RX, ENABLE);
+//   DMA_Cmd(SD_DMA_Stream_SPI_TX, ENABLE);
 
-  /* Enable SPI TX/RX request */
-  SPI_I2S_DMACmd(SD_SPI, SPI_I2S_DMAReq_Rx | SPI_I2S_DMAReq_Tx, ENABLE);
+//   /* Enable SPI TX/RX request */
+//   SPI_I2S_DMACmd(SD_SPI, SPI_I2S_DMAReq_Rx | SPI_I2S_DMAReq_Tx, ENABLE);
 
-  while (DMA_GetFlagStatus(SD_DMA_Stream_SPI_TX, SD_DMA_FLAG_SPI_TC_TX) == RESET) { ; }
-  while (DMA_GetFlagStatus(SD_DMA_Stream_SPI_RX, SD_DMA_FLAG_SPI_TC_RX) == RESET) { ; }
+//   while (DMA_GetFlagStatus(SD_DMA_Stream_SPI_TX, SD_DMA_FLAG_SPI_TC_TX) == RESET) { ; }
+//   while (DMA_GetFlagStatus(SD_DMA_Stream_SPI_RX, SD_DMA_FLAG_SPI_TC_RX) == RESET) { ; }
 
-  /* Disable DMA Channels */
-  DMA_Cmd(SD_DMA_Stream_SPI_RX, DISABLE);
-  DMA_Cmd(SD_DMA_Stream_SPI_TX, DISABLE);
+//   /* Disable DMA Channels */
+//   DMA_Cmd(SD_DMA_Stream_SPI_RX, DISABLE);
+//   DMA_Cmd(SD_DMA_Stream_SPI_TX, DISABLE);
 
-  /* Disable SPI RX/TX request */
-  SPI_I2S_DMACmd(SD_SPI, SPI_I2S_DMAReq_Rx | SPI_I2S_DMAReq_Tx, DISABLE);
-}
-#endif /* SD_USE_DMA */
+//   /* Disable SPI RX/TX request */
+//   SPI_I2S_DMACmd(SD_SPI, SPI_I2S_DMAReq_Rx | SPI_I2S_DMAReq_Tx, DISABLE);
+// }
+// #endif /* SD_USE_DMA */
 
 
 /*-----------------------------------------------------------------------*/
@@ -460,9 +460,9 @@ BOOL xmit_datablock (
 )
 {
   BYTE resp;
-#ifndef SD_USE_DMA
+// #ifndef SD_USE_DMA
   BYTE wc;
-#endif
+// #endif
 
   if (wait_ready() != 0xFF) {
     TRACE_SD_CARD_EVENT(1, sd_xmit_datablock_wait_ready, token);
