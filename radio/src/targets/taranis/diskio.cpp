@@ -243,6 +243,8 @@ void stm32_dma_transfer(
 
   DMA_DeInit(SD_DMA_Stream_SPI_RX);
   DMA_DeInit(SD_DMA_Stream_SPI_TX);
+
+  #error
   
   /* shared DMA configuration values between SPI2 RX & TX*/
   DMA_InitStructure.DMA_Channel = SD_DMA_Channel_SPI;//the same channel
